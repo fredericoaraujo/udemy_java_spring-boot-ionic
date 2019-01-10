@@ -1,14 +1,16 @@
 package br.com.fredericoaraujo.cursomc.domain.enums;
 
-public enum TipoCliente {
+public enum EstadoPagamento {
 
-	PESSOA_FISICA(1,"Pessoa Física"),
-	PESSOA_JURIDICA(2,"Pessoa Jurídica");
+	PENDENTE(1, "Pendente"),
+	QUITADO(2, "Quitado"),
+	CANCELADO(3, "Cancelado");
 	
+
 	private Integer codigo;
 	private String descricao;
 
-	private TipoCliente(Integer codigo, String descricao) {
+	private EstadoPagamento(Integer codigo, String descricao) {
 		this.codigo = codigo;
 		this.descricao = descricao;
 	}
@@ -21,9 +23,9 @@ public enum TipoCliente {
 		return descricao;
 	}
 	
-	public static TipoCliente toEnum(Integer codigo) {
+	public static EstadoPagamento toEnum(Integer codigo) {
 		if (codigo != null) {
-			for (TipoCliente tipo : values()) {
+			for (EstadoPagamento tipo : values()) {
 				if (codigo.equals(tipo.codigo)) {
 					return tipo;
 				}
@@ -32,4 +34,5 @@ public enum TipoCliente {
 		
 		throw new IllegalArgumentException("Código ["+ codigo +"] inválido.") ;
 	}
+
 }

@@ -1,5 +1,6 @@
 package br.com.fredericoaraujo.cursomc;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +13,20 @@ import br.com.fredericoaraujo.cursomc.domain.Cidade;
 import br.com.fredericoaraujo.cursomc.domain.Cliente;
 import br.com.fredericoaraujo.cursomc.domain.Endereco;
 import br.com.fredericoaraujo.cursomc.domain.Estado;
+import br.com.fredericoaraujo.cursomc.domain.Pagamento;
+import br.com.fredericoaraujo.cursomc.domain.PagamentoComBoleto;
+import br.com.fredericoaraujo.cursomc.domain.PagamentoComCartao;
+import br.com.fredericoaraujo.cursomc.domain.Pedido;
 import br.com.fredericoaraujo.cursomc.domain.Produto;
+import br.com.fredericoaraujo.cursomc.domain.enums.EstadoPagamento;
 import br.com.fredericoaraujo.cursomc.domain.enums.TipoCliente;
 import br.com.fredericoaraujo.cursomc.repositories.CategoriaRepository;
 import br.com.fredericoaraujo.cursomc.repositories.CidadeRepository;
 import br.com.fredericoaraujo.cursomc.repositories.ClienteRepository;
 import br.com.fredericoaraujo.cursomc.repositories.EnderecoRepository;
 import br.com.fredericoaraujo.cursomc.repositories.EstadoRepository;
+import br.com.fredericoaraujo.cursomc.repositories.PagamentoRepository;
+import br.com.fredericoaraujo.cursomc.repositories.PedidoRepository;
 import br.com.fredericoaraujo.cursomc.repositories.ProdutoRepository;
 
 @SpringBootApplication
@@ -41,6 +49,12 @@ public class CursoMcApplication implements CommandLineRunner {
 	
 	@Autowired
 	private EnderecoRepository enderecoRepository;
+	
+	@Autowired
+	private PedidoRepository pedidoRepository;
+	
+	@Autowired
+	private PagamentoRepository pagamentoRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(CursoMcApplication.class, args);
@@ -83,13 +97,28 @@ public class CursoMcApplication implements CommandLineRunner {
 		
 		maria.getTelefones().addAll(Arrays.asList("12345-6789", "98765-4321"));
 		
-		Endereco e1 = new Endereco(null, "Rua das flores", "103", "casa", "XPTO", "70000-000", uberlandia, maria);
-		Endereco e2 = new Endereco(null, "Rua Franciso Sinkus", "19A", "casa", "São Miguel PTA", "08000-000", saoPaulo, maria);
+		Endereco endereco1 = new Endereco(null, "Rua das flores", "103", "casa", "XPTO", "70000-000", uberlandia, maria);
+		Endereco endereco2 = new Endereco(null, "Rua Franciso Sinkus", "19A", "casa", "São Miguel PTA", "08000-000", saoPaulo, maria);
 		
-		maria.getEnderecos().addAll(Arrays.asList(e1, e2));
+		maria.getEnderecos().addAll(Arrays.asList(endereco1, endereco2));
 		
 		clienteRepository.save(maria);
 		enderecoRepository.saveAll(maria.getEnderecos());
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		Pedido pedido1 = new Pedido(null, sdf.parse("30/09/2017 10:32"), endereco1, maria);
+		Pedido pedido2 = new Pedido(null, sdf.parse("10/10/2017 19:35"), endereco2, maria);
+		
+		Pagamento pagamento1 = new PagamentoComCartao(null, EstadoPagamento.QUITADO, pedido1, 6);
+		pedido1.setPagamento(pagamento1);
+		
+		Pagamento pagamento2 = new PagamentoComBoleto(null, EstadoPagamento.PENDENTE, pedido2, sdf.parse("20/10/2017 00:00"), null);
+		pedido2.setPagamento(pagamento2);
+		
+		maria.getPedidos().addAll(Arrays.asList(pedido1, pedido2));
+		
+		pedidoRepository.saveAll(Arrays.asList(pedido1, pedido2));
+		pagamentoRepository.saveAll(Arrays.asList(pagamento1, pagamento2));
 
 	}
 
